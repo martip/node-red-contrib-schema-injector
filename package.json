@@ -1,10 +1,12 @@
 {
   "name": "node-red-contrib-schema-injector",
   "version": "1.0.0",
-  "description": "Node-RED node to inject a JSON schema into msg.schema.",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+  "description": "Node-RED node to inject a JSON schema into msg.schema",
+  "repository": {
+    "type": "git",
+    "url": "http://10.1.1.30:3000/Node-RED/node-red-contrib-schema-injector.git"
   },
+  "keywords": [ "node-red" ],
   "author": "Paolo Martino",
   "license": "MIT",
   "node-red": {
