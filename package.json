@@ -4,7 +4,7 @@
   "description": "Node-RED node to inject a JSON schema into msg.schema",
   "repository": {
     "type": "git",
-    "url": "http://10.1.1.30:3000/Node-RED/node-red-contrib-schema-injector.git"
+    "url": "https://github.com/martip/node-red-contrib-schema-injector.git"
   },
   "keywords": [ "node-red" ],
   "author": "Paolo Martino",
