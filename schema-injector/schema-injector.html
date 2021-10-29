@@ -1,0 +1,130 @@
+<script type="text/javascript">
+
+  RED.nodes.registerType('schema-injector', {
+    category: 'function',
+    color: '#F3B567',
+    defaults: {
+      name: { value: '' },
+      schema: { value: '', validate: function(v) {
+        if (v.length === 0) {
+          return true;
+        }
+        try {
+          JSON.parse(v);
+          return true;
+        } catch (error) {
+          return false;
+        }
+      } }
+    },
+    inputs: 1,
+    outputs: 1,
+    icon: 'json-schema.svg',
+    label: function() {
+      return this.name || 'schema injector';
+    },
+    paletteLabel: 'schema injector',
+    labelStyle: function() {
+      return this.name ? 'node_label_italic' : '';
+    },
+    oneditprepare: function() {
+      const that = this;
+      this.editor = RED.editor.createEditor({
+        id: 'node-input-schema-editor',
+        mode: 'ace/mode/json',
+        value: $('#node-input-schema').val()
+      });
+
+      RED.library.create({
+        url: 'schemas', // where to get the data from
+        type: 'schema', // the type of object the library is for
+        editor: that.editor, // the field name the main text body goes to
+        mode: 'ace/mode/json',
+        fields: ['name'],
+        ext: 'json'
+      });
+      this.editor.focus();
+
+      RED.popover.tooltip($('#node-schema-expand-editor'), RED._('node-red:common.label.expand'));
+      $('#node-schema-expand-editor').on('click', function(e) {
+        e.preventDefault();
+        const value = that.editor.getValue();
+        RED.editor.editText({
+          mode: 'json',
+          value: value,
+          width: 'Infinity',
+          cursor: that.editor.getCursorPosition(),
+          complete: function(v, cursor) {
+            that.editor.setValue(v, -1);
+            that.editor.gotoLine(cursor.row + 1, cursor.column ,false);
+            setTimeout(function() {
+              that.editor.focus();
+            }, 300);
+          }
+        })
+      });
+  },
+  oneditsave: function() {
+    $('#node-input-schema').val(this.editor.getValue());
+    this.editor.destroy();
+    delete this.editor;
+  },
+  oneditcancel: function() {
+    this.editor.destroy();
+    delete this.editor;
+  },
+  oneditresize: function(size) {
+    const rows = $('#dialog-form>div:not(.node-text-editor-row)');
+    let height = $('#dialog-form').height();
+    for (let i = 0; i < rows.length; i++) {
+      height -= $(rows[i]).outerHeight(true);
+    }
+    const editorRow = $('#dialog-form>div.node-text-editor-row');
+    height -= (parseInt(editorRow.css('marginTop')) + parseInt(editorRow.css('marginBottom')));
+    $('.node-text-editor').css('height', height + 'px');
+    this.editor.resize();
+  }
+});
+</script>
+  
+<script type="text/html" data-template-name="schema-injector">
+  <div class="form-row">
+    <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+    <input type="text" id="node-input-name" placeholder="Name">
+  </div>
+  <div class="form-row" style="position: relative; margin-bottom: 0px;">
+    <label for="node-input-schema">JSON Schema</label>
+    <input type="hidden" id="node-input-schema" autofocus="autofocus">
+    <div style="position: absolute; right:0;display:inline-block; text-align: right; font-size: 0.8em;">
+      <button id="node-schema-expand-editor" class="red-ui-button red-ui-button-small"><i class="fa fa-expand"></i></button>
+    </div>
+  </div>
+  <div class="form-row node-text-editor-row">
+    <div style="height: 250px; min-height:150px;" class="node-text-editor" id="node-input-schema-editor" ></div>
+  </div>
+</script>
+
+<script type="text/html" data-help-name="schema-injector">
+  <p>A function that injects a JSON Schema into <code>msg.schema</code>.</p>
+  
+  <h3>Inputs</h3>
+    <dl class="message-properties">
+        <dt>payload<span class="property-type">object | string</span></dt>
+        <dd>A JavaScript object or string.</dd>
+    </dl>
+  
+   <h3>Outputs</h3>
+  <dl class="message-properties">
+      <dt>payload <span class="property-type">object | string</span></dt>
+      <dd>The payload received.</dd>
+      <dt>schema <span class="property-type">object</span></dt>
+      <dd>The JSON schema configured in the node editor (if not empty).</dd>
+      <dt>schemaNotValid <span class="property-type">string</span></dt>
+      <dd>If the provided JSON schema is not valid, the catch node will have a <code>schemaNotValid</code> property containing a description of the issue encountered.</dd>
+  </dl>
+  
+  <h3>Details</h3>
+  <p>This node is meant to be used in conjunction with the default JSON parser node, to force it to perform a validation against the provided schema.</p>
+  <p>If no JSON Schema is provided, this node simply passes along the received message.</p>
+  <p></p>
+</script>

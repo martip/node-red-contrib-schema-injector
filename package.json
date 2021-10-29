@@ -1,0 +1,15 @@
+{
+  "name": "node-red-contrib-schema-injector",
+  "version": "1.0.0",
+  "description": "Node-RED node to inject a JSON schema into msg.schema.",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Paolo Martino",
+  "license": "MIT",
+  "node-red": {
+    "nodes": {
+      "schema-injector": "schema-injector/schema-injector.js"
+    }
+  }
+}
